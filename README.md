@@ -76,3 +76,7 @@ Total score == 10 frames x 15 == 150
 Total score == 167
 
 etc...
+
+## Mental Note
+Examine the commits to find out the refactoring process
+I followed since the first crappy version. 

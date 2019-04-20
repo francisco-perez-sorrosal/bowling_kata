@@ -1,4 +1,3 @@
-# TODO: Refactor this shit
 from enum import Enum
 
 REGULAR_FRAMES_IN_GAME = 10
