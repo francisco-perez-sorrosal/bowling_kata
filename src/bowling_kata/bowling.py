@@ -1,5 +1,4 @@
 # TODO: Refactor this shit
-from abc import abstractmethod
 from enum import Enum
 
 REGULAR_FRAMES_IN_GAME = 10
@@ -35,9 +34,8 @@ class BaseFrame:
     def calculate_play_points(self):
         return self.calculate_points()
 
-    @abstractmethod
     def calculate_points(self):
-        pass
+        return sum(self.rolls)
 
 
 class RegularFrame(BaseFrame):
@@ -45,14 +43,12 @@ class RegularFrame(BaseFrame):
     def __init__(self, frame_str):
         super().__init__(frame_str)
 
-    def calculate_points(self):
         for i, char in enumerate(self.frame_str):
             roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
             if roll_output == RollOutput.STRIKE:
                 self.strike = True
             if roll_output == RollOutput.SPARE:
                 self.spare = True
-        return sum(self.rolls)
 
 
 class ExtraFrame(BaseFrame):
@@ -60,10 +56,8 @@ class ExtraFrame(BaseFrame):
     def __init__(self, frame_str):
         super().__init__(frame_str)
 
-    def calculate_points(self):
         for i, char in enumerate(self.frame_str):
             roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
-        return sum(self.rolls)
 
 
 class Bowling:
