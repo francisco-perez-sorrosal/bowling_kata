@@ -39,17 +39,14 @@ class Frame:
         self.next_frame = frame
 
     def calculate_play_points(self):
-        points = 0
+        points = sum(self.rolls)
         if self.spare:
             points += self.next_frame.rolls[0]
         if self.strike:
-            points += self.next_frame.calculate_points()
+            points += sum(self.next_frame.rolls)
             if self.next_frame.strike:
                 points += self.next_frame.next_frame.rolls[0]
         return points
-
-    def calculate_points(self):
-        return sum(self.rolls)
 
 
 class Bowling:
@@ -60,11 +57,8 @@ class Bowling:
 
     def calculate_frames_points(self, frames):
         frames_points = 0
-        print(len(frames))
         for i in range(REGULAR_FRAMES_IN_GAME):
-            print(i)
-            frame = frames[i]
-            frames_points += frame.calculate_points() + frame.calculate_play_points()
+            frames_points += frames[i].calculate_play_points()
         return frames_points
 
     def get_frames(self, game_str):
