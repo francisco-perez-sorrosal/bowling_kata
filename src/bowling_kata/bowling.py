@@ -72,14 +72,14 @@ class Bowling:
         for i in range(REGULAR_FRAMES_IN_GAME):
             print(i)
             frame = frames[i]
-            frames_points += frame.calculate_play_points()
+            frames_points += frame.calculate_points()
             if frame.spare:
-                frames[i + 1].calculate_play_points()
+                frames[i + 1].calculate_points()
                 frames_points += frames[i + 1].rolls[0]
             if frame.strike:
-                frames_points += frames[i + 1].calculate_play_points()
+                frames_points += frames[i + 1].calculate_points()
                 if frames[i + 1].strike and i + 2 < len(frames):
-                    frames[i + 2].calculate_play_points()
+                    frames[i + 2].calculate_points()
                     frames_points += frames[i + 2].rolls[0]
                 # if i == 9:
                 #     print("a {} {}".format(frames[i + 1].calculate_points(), frames[i + 1].is_extra))
