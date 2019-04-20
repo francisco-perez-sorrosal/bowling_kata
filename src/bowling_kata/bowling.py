@@ -34,8 +34,11 @@ class BaseFrame:
     def calculate_play_points(self):
         points = 0
         if self.spare:
-            if self.next_frame:
-                points += self.next_frame.rolls[0]
+            points += self.next_frame.rolls[0]
+        if self.strike:
+            points += self.next_frame.calculate_points()
+            if self.next_frame.strike:
+                points += self.next_frame.next_frame.rolls[0]
         return points
 
     def calculate_points(self):
@@ -77,13 +80,6 @@ class Bowling:
             print(i)
             frame = frames[i]
             frames_points += frame.calculate_points() + frame.calculate_play_points()
-            if frame.strike:
-                frames_points += frames[i + 1].calculate_points()
-                if frames[i + 1].strike and i + 2 < len(frames):
-                    frames[i + 2].calculate_points()
-                    frames_points += frames[i + 2].rolls[0]
-                # if i == 9:
-                #     print("a {} {}".format(frames[i + 1].calculate_points(), frames[i + 1].is_extra))
         return frames_points
 
     def get_frames(self, game_str):
