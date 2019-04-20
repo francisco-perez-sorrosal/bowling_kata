@@ -19,14 +19,21 @@ def get_points_per_roll(roll_char, previous_roll_points=0):
         return RollOutput.SPARE, 10 - previous_roll_points
 
 
-class BaseFrame:
+class Frame:
 
-    def __init__(self, frame_str):
+    def __init__(self, frame_str, is_extra=False):
         self.frame_str = frame_str
         self.next_frame = None
         self.rolls = [0, 0]
         self.strike = False
         self.spare = False
+        for i, char in enumerate(self.frame_str):
+            roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
+            if not is_extra:  # Only if it is not the extra frame the result calculation may vary
+                if roll_output == RollOutput.STRIKE:
+                    self.strike = True
+                if roll_output == RollOutput.SPARE:
+                    self.spare = True
 
     def set_next_frame(self, frame):
         self.next_frame = frame
@@ -43,28 +50,6 @@ class BaseFrame:
 
     def calculate_points(self):
         return sum(self.rolls)
-
-
-class RegularFrame(BaseFrame):
-
-    def __init__(self, frame_str):
-        super().__init__(frame_str)
-
-        for i, char in enumerate(self.frame_str):
-            roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
-            if roll_output == RollOutput.STRIKE:
-                self.strike = True
-            if roll_output == RollOutput.SPARE:
-                self.spare = True
-
-
-class ExtraFrame(BaseFrame):
-
-    def __init__(self, frame_str):
-        super().__init__(frame_str)
-
-        for i, char in enumerate(self.frame_str):
-            roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
 
 
 class Bowling:
@@ -85,7 +70,7 @@ class Bowling:
     def get_frames(self, game_str):
         regular_frames_str, extra_frame_str = game_str.split('||')
         frames = self.get_regular_frames(regular_frames_str)
-        frames.append(ExtraFrame(extra_frame_str))
+        frames.append(Frame(extra_frame_str, is_extra=True))
         for i in range(REGULAR_FRAMES_IN_GAME):
             frames[i].set_next_frame(frames[i + 1])
         return frames
@@ -94,6 +79,6 @@ class Bowling:
         frames_strs = frames_str.split('|')
         frames = []
         for frame_str in frames_strs:
-            frames.append(RegularFrame(frame_str))
+            frames.append(Frame(frame_str))
         assert len(frames) == REGULAR_FRAMES_IN_GAME
         return frames
