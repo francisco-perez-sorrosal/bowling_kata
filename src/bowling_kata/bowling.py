@@ -1,4 +1,22 @@
 # TODO: Refactor this shit
+from enum import Enum
+
+
+class RollOutput(Enum):
+    REGULAR, STRIKE, SPARE = range(3)
+
+
+def get_points_per_roll(roll_char, previous_roll_points=0):
+    if roll_char in [str(j) for j in range(1, 10)]:
+        return RollOutput.REGULAR, int(roll_char)
+    elif roll_char == '-':
+        return RollOutput.REGULAR, 0
+    elif roll_char == 'X':
+        return RollOutput.STRIKE, 10
+    else:  # '/'
+        return RollOutput.SPARE, 10 - previous_roll_points
+
+
 class Frame:
 
     def __init__(self, frame_str, is_extra=False):
@@ -11,17 +29,12 @@ class Frame:
     def calculate_points(self):
         points = 0
         for i, char in enumerate(self.frame_str):
-            if char in [str(j) for j in range(1, 10)]:
-                self.rolls[i] = int(char)
-            elif char == '-':
-                self.rolls[i] = 0
-            elif char == 'X':
-                self.rolls[i] = 10
-                if not self.is_extra:
+
+            roll_output, self.rolls[i] = get_points_per_roll(char) if i == 0 else get_points_per_roll(char, self.rolls[i - 1])
+            if not self.is_extra:
+                if roll_output == RollOutput.STRIKE:
                     self.strike = True
-            else:
-                self.rolls[i] = 10 - self.rolls[i - 1]
-                if not self.is_extra:
+                if roll_output == RollOutput.SPARE:
                     self.spare = True
         if self.is_extra:
             print(self.rolls)
