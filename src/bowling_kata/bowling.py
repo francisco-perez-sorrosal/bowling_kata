@@ -60,14 +60,11 @@ class ExtraFrame(BaseFrame):
 class Bowling:
 
     def calculate_result(self, game_str):
-        frames, extra_frame = self.split_input(game_str)
-        frames_points = self.calculate_frames_points(frames, extra_frame)
-        return frames_points
+        frames = self.get_frames(game_str)
+        return self.calculate_frames_points(frames)
 
-    def calculate_frames_points(self, frames_str, extra_frame_str):
+    def calculate_frames_points(self, frames):
         frames_points = 0
-        frames = self.split_frames(frames_str)
-        frames.append(ExtraFrame(extra_frame_str))
         print(len(frames))
         for i in range(10):
             print(i)
@@ -85,10 +82,13 @@ class Bowling:
                 #     print("a {} {}".format(frames[i + 1].calculate_points(), frames[i + 1].is_extra))
         return frames_points
 
-    def split_input(self, game_str):
-        return game_str.split('||')
+    def get_frames(self, game_str):
+        regular_frames_str, extra_frame_str = game_str.split('||')
+        frames = self.get_regular_frames(regular_frames_str)
+        frames.append(ExtraFrame(extra_frame_str))
+        return frames
 
-    def split_frames(self, frames_str):
+    def get_regular_frames(self, frames_str):
         frames_strs = frames_str.split('|')
         frames = []
         for frame_str in frames_strs:
