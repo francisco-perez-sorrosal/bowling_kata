@@ -2,6 +2,8 @@
 from abc import abstractmethod
 from enum import Enum
 
+REGULAR_FRAMES_IN_GAME = 10
+
 
 class RollOutput(Enum):
     REGULAR, STRIKE, SPARE = range(3)
@@ -22,9 +24,13 @@ class BaseFrame:
 
     def __init__(self, frame_str):
         self.frame_str = frame_str
+        self.next_frame = None
         self.rolls = [0, 0]
         self.strike = False
         self.spare = False
+
+    def set_next_frame(self, frame):
+        self.next_frame = frame
 
     @abstractmethod
     def calculate_points(self):
@@ -66,7 +72,7 @@ class Bowling:
     def calculate_frames_points(self, frames):
         frames_points = 0
         print(len(frames))
-        for i in range(10):
+        for i in range(REGULAR_FRAMES_IN_GAME):
             print(i)
             frame = frames[i]
             frames_points += frame.calculate_points()
@@ -86,6 +92,8 @@ class Bowling:
         regular_frames_str, extra_frame_str = game_str.split('||')
         frames = self.get_regular_frames(regular_frames_str)
         frames.append(ExtraFrame(extra_frame_str))
+        for i in range(REGULAR_FRAMES_IN_GAME):
+            frames[i].set_next_frame(frames[i + 1])
         return frames
 
     def get_regular_frames(self, frames_str):
@@ -93,5 +101,5 @@ class Bowling:
         frames = []
         for frame_str in frames_strs:
             frames.append(RegularFrame(frame_str))
-        assert len(frames) == 10
+        assert len(frames) == REGULAR_FRAMES_IN_GAME
         return frames
